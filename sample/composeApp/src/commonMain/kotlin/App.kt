@@ -13,12 +13,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import kotlin_multiplatform_library.sample.composeapp.generated.resources.Res
 import cache.CacheAdapter
 import cache.CacheConfig
 import cache.CachePolicy
 import cache.CachePolicyManager
 import cache.cacheKey
 import kotlin.time.Duration.Companion.seconds
+import kotlin_multiplatform_library.sample.composeapp.generated.resources.compose_multiplatform
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -92,7 +94,7 @@ fun App() {
             }
             AnimatedVisibility(showContent) {
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource("compose-multiplatform.xml"), null)
+                    Image(painterResource(Res.drawable.compose_multiplatform), null)
                     Text("Compose: $greeting")
                 }
             }
