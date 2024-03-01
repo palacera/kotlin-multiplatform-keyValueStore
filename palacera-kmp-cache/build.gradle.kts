@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.kover.core)
     alias(libs.plugins.kotlin.serialization)
+    id("maven-publish")
 }
 
 kotlin {
@@ -65,4 +66,18 @@ detekt {
     config.setFrom("${project.rootDir}/config/detekt/detekt-config.yml")
     source.setFrom(kotlin.sourceSets.flatMap { it.kotlin.sourceDirectories })
     ignoreFailures = false
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("default") {
+            // Adjust groupId, artifactId, and version according to your needs
+            group = "com.palacera.kmpcache"
+            artifactId = "kmpcache"
+            version = "0.0.3"
+
+            // Include artifacts from Kotlin Multiplatform targets
+            from(components["kotlin"])
+        }
+    }
 }
