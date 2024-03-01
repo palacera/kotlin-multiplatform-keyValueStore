@@ -1,14 +1,13 @@
 package cache
 
 class CachePolicyManager(
-    val cache: CacheAdapter
+    val cache: CacheAdapter,
 ) {
-    suspend inline fun <reified T: Any> resolve(
+    suspend inline fun <reified T : Any> resolve(
         policy: CachePolicy,
         cacheKey: CacheKey,
         fetchSourceData: () -> T,
     ): T {
-
         return when (policy) {
             is CachePolicy.Never -> {
                 fetchSourceData()

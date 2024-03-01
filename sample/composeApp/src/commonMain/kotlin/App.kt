@@ -1,8 +1,5 @@
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -13,18 +10,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import kotlin_multiplatform_library.sample.composeapp.generated.resources.Res
 import cache.CacheAdapter
 import cache.CacheConfig
 import cache.CachePolicy
 import cache.CachePolicyManager
 import cache.cacheKey
 import kotlin.time.Duration.Companion.seconds
-import kotlin_multiplatform_library.sample.composeapp.generated.resources.compose_multiplatform
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -88,16 +82,6 @@ fun App() {
             Text(ifAvailableCachedValue)
             Text(refreshCachedValue)
             Text(expireCachedValue)
-
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
-            }
         }
     }
 }

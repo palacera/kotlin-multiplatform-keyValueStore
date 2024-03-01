@@ -1,7 +1,7 @@
 package cache
 
-import kotlin.time.Duration
 import kotlinx.serialization.Serializable
+import kotlin.time.Duration
 
 @Serializable
 sealed interface CachePolicy {
