@@ -10,11 +10,12 @@ data class CacheData<T>(
     val cachePolicy: CachePolicy,
     val createdAt: Instant,
 ) {
-    fun isExpired(): Boolean = when (cachePolicy) {
-        is CachePolicy.Never -> true
-        is CachePolicy.UntilExpires -> createdAt + cachePolicy.duration < Clock.System.now()
-        else -> false
-    }
+    fun isExpired(): Boolean =
+        when (cachePolicy) {
+            is CachePolicy.Never -> true
+            is CachePolicy.UntilExpires -> createdAt + cachePolicy.duration < Clock.System.now()
+            else -> false
+        }
 }
 
 fun <T : Any> cacheData(
