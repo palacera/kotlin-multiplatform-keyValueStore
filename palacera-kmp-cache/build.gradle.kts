@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
@@ -8,6 +6,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.kover.core)
     alias(libs.plugins.kotlin.serialization)
+    id("maven-publish")
 }
 
 kotlin {
@@ -20,15 +19,15 @@ kotlin {
 
     androidTarget()
 
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+//    iosX64()
+//    iosArm64()
+//    iosSimulatorArm64()
 
     jvm()
 
     sourceSets {
         commonMain.dependencies {
-            with (libs) {
+            with(libs) {
                 implementation(kotlin.datetime)
                 implementation(kotlinx.serialization.json)
                 implementation(koin.core)
@@ -65,4 +64,18 @@ detekt {
     config.setFrom("${project.rootDir}/config/detekt/detekt-config.yml")
     source.setFrom(kotlin.sourceSets.flatMap { it.kotlin.sourceDirectories })
     ignoreFailures = false
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("default") {
+            // Adjust groupId, artifactId, and version according to your needs
+            group = "com.palacera.kmpcache"
+            artifactId = "kmpcache"
+            version = "0.0.5"
+
+            // Include artifacts from Kotlin Multiplatform targets
+            from(components["kotlin"])
+        }
+    }
 }
