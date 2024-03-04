@@ -28,7 +28,7 @@ kotlin-serialization = "1.6.3"
 kottage = "1.6.0"
 ktor = "2.3.8"
 logback = "1.5.0"
-kover = "0.7.4"
+kover = "0.7.6"
 mputils = "0.1.1"
 startupRuntime = "1.1.1"
 
