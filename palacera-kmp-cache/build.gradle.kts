@@ -17,7 +17,9 @@ kotlin {
 //        browser()
 //    }
 
-    androidTarget()
+    androidTarget {
+        publishLibraryVariants("release")
+    }
 
 //    iosX64()
 //    iosArm64()
@@ -72,7 +74,7 @@ publishing {
             // Adjust groupId, artifactId, and version according to your needs
             group = "com.palacera.kmpcache"
             artifactId = "kmpcache"
-            version = "0.0.5"
+            version = "0.0.6"
 
             // Include artifacts from Kotlin Multiplatform targets
             from(components["kotlin"])
