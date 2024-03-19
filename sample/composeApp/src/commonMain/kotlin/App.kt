@@ -3,6 +3,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,8 +26,6 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 fun App() {
 
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        val greeting = remember { Greeting().greet() }
         val scope = rememberCoroutineScope()
 
         var neverCachedValue by remember { mutableStateOf("loading") }
@@ -44,10 +43,9 @@ fun App() {
             )
         }
 
-
         val cacheManager = remember { CachePolicyManager(cacheAdapter) }
 
-        scope.launch {
+        LaunchedEffect(Unit) {
             launch {
                 neverCachedValue = cacheManager.resolve(CachePolicy.Never, cacheKey("cache", "never")) {
                     delay(2000)
