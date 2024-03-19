@@ -74,7 +74,7 @@ publishing {
             // Adjust groupId, artifactId, and version according to your needs
             group = "com.palacera.kmpcache"
             artifactId = "kmpcache"
-            version = "0.0.8"
+            version = "0.0.9"
 
             // Include artifacts from Kotlin Multiplatform targets
             from(components["kotlin"])
