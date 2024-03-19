@@ -74,7 +74,10 @@ class CacheAdapter(
     ) = cache.put<CacheData<T>>(
         cacheKey.key,
         cacheData(value, cachePolicy),
-        cachePolicy.getExpireDuration(),
+        when (cachePolicy) {
+            is CachePolicy.UntilExpires -> cachePolicy.duration
+            else -> null
+        },
     )
 
     suspend fun invalidate(cacheKey: CacheKey) {

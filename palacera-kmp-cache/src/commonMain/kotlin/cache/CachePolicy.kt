@@ -17,10 +17,3 @@ sealed interface CachePolicy {
     @Serializable
     data class UntilExpires(val duration: Duration) : CachePolicy // Return cache if not expired, else request data
 }
-
-fun CachePolicy.getExpireDuration(): Duration? {
-    return when (this) {
-        is CachePolicy.UntilExpires -> duration
-        else -> null
-    }
-}
