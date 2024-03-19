@@ -2,7 +2,7 @@ package context
 
 import com.ncorti.kotlin.template.library.android.applicationContext
 
-actual val directory: Directory =
+actual val directory by lazy {
     with(applicationContext) {
         Directory(
             document = filesDir.absolutePath,
@@ -11,3 +11,4 @@ actual val directory: Directory =
             cache = cacheDir.absolutePath,
         )
     }
+}
