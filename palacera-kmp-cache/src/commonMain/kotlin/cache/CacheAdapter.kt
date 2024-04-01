@@ -1,18 +1,15 @@
 package cache
 
 import context.directory
-import getKottageContext
-import io.github.irgaly.kottage.Kottage
-import io.github.irgaly.kottage.KottageEnvironment
 import io.github.irgaly.kottage.KottageStorage
 import io.github.irgaly.kottage.get
 import io.github.irgaly.kottage.put
-import io.github.irgaly.kottage.strategy.KottageFifoStrategy
-import io.github.irgaly.kottage.strategy.KottageLruStrategy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.serialization.json.Json
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
+// TODO move
 fun coroutineScope(scope: CoroutineScope) : CoroutineScope {
     checkNotNull(scope.coroutineContext[Job]) {
         "GlobalScope or CoroutineScope without a Job is not permitted."
@@ -26,23 +23,12 @@ class CacheAdapter(
     private val config: CacheConfig,
 ) : CoroutineScope by coroutineScope(scope) {
 
+    val expirationDuration: Duration get() = config.expirationDuration
+
     val cache: KottageStorage by lazy {
-        val kottage = Kottage(
-            name = "cache",
-            directoryPath = directory.cache,
-            environment = KottageEnvironment(
-                context = getKottageContext(),
-            ),
-            scope = scope,
-            json = Json.Default,
-        )
-        kottage.cache(config.name) {
-            strategy =
-                when (config.strategy) {
-                    CacheStrategy.FirstInFirstOut -> KottageFifoStrategy(config.maxEntries)
-                    CacheStrategy.LeastRecentlyUsed -> KottageLruStrategy(config.maxEntries)
-                }
-            defaultExpireTime = config.defaultExpireTime
+        when (expirationDuration) {
+            Duration.INFINITE -> CacheFactory(scope, config, directory.cache).storage()
+            else -> CacheFactory(scope, config, directory.document).cache()
         }
     }
 
@@ -74,9 +60,11 @@ class CacheAdapter(
     ) = cache.put<CacheData<T>>(
         cacheKey.key,
         cacheData(value, cachePolicy),
-        when (cachePolicy) {
-            is CachePolicy.UntilExpires -> cachePolicy.duration
-            else -> null
+        when {
+            expirationDuration != Duration.INFINITE && cachePolicy is CachePolicy.UntilExpires ->
+                cachePolicy.duration.coerceIn(1.seconds, expirationDuration)
+            else ->
+                null
         },
     )
 
