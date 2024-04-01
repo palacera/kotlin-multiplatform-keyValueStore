@@ -16,8 +16,6 @@ import cache.CacheConfig
 import cache.CachePolicy
 import cache.CachePolicyManager
 import cache.cacheKey
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
@@ -33,46 +31,48 @@ fun App() {
         var refreshCachedValue by remember { mutableStateOf("loading") }
         var expireCachedValue by remember { mutableStateOf("loading") }
 
-        val cacheAdapter = remember {
-            CacheAdapter(
-                scope,
-                CacheConfig(
-                    name = "cache",
-                    file = "cache",
+
+        val cacheManager = remember {
+            CachePolicyManager(
+                CacheAdapter(
+                    scope,
+                    CacheConfig(
+                        name = "cache",
+                        file = "cache",
+                    )
                 )
             )
         }
 
-        val cacheManager = remember { CachePolicyManager(cacheAdapter) }
-
-        LaunchedEffect(Unit) {
-            launch {
-                neverCachedValue = cacheManager.resolve(CachePolicy.Never, cacheKey("cache", "never")) {
-                    delay(2000)
-                    "Never cached"
-                }
-            }
+        LaunchedEffect(scope) {
+//            launch {
+//                neverCachedValue = cacheManager.resolve(CachePolicy.Never, cacheKey("cache", "never")) {
+//                    delay(2000)
+//                    "Never cached"
+//                }
+//            }
 
             launch {
                 ifAvailableCachedValue = cacheManager.resolve(CachePolicy.IfAvailable, cacheKey("cache", "if-available")) {
-                    delay(2000)
+                    println("asdf not cached")
+                    //delay(2000)
                     "Cached if available"
                 }
             }
 
-            launch {
-                refreshCachedValue = cacheManager.resolve(CachePolicy.Refresh, cacheKey("cache", "refresh")) {
-                    delay(2000)
-                    "Refresh cache"
-                }
-            }
-
-            launch {
-                expireCachedValue = cacheManager.resolve(CachePolicy.UntilExpires(10.seconds), cacheKey("cache", "until-expires")) {
-                    delay(2000)
-                    "Expires cache"
-                }
-            }
+//            launch {
+//                refreshCachedValue = cacheManager.resolve(CachePolicy.Refresh, cacheKey("cache", "refresh")) {
+//                    delay(2000)
+//                    "Refresh cache"
+//                }
+//            }
+//
+//            launch {
+//                expireCachedValue = cacheManager.resolve(CachePolicy.UntilExpires(10.seconds), cacheKey("cache", "until-expires")) {
+//                    delay(2000)
+//                    "Expires cache"
+//                }
+//            }
         }
 
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {

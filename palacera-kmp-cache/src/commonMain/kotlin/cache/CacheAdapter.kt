@@ -1,18 +1,14 @@
 package cache
 
 import context.directory
-import getKottageContext
-import io.github.irgaly.kottage.Kottage
-import io.github.irgaly.kottage.KottageEnvironment
 import io.github.irgaly.kottage.KottageStorage
 import io.github.irgaly.kottage.get
 import io.github.irgaly.kottage.put
-import io.github.irgaly.kottage.strategy.KottageFifoStrategy
-import io.github.irgaly.kottage.strategy.KottageLruStrategy
+import kotlin.time.Duration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.serialization.json.Json
 
+// TODO move
 fun coroutineScope(scope: CoroutineScope) : CoroutineScope {
     checkNotNull(scope.coroutineContext[Job]) {
         "GlobalScope or CoroutineScope without a Job is not permitted."
@@ -20,29 +16,19 @@ fun coroutineScope(scope: CoroutineScope) : CoroutineScope {
     return scope
 }
 
-
 class CacheAdapter(
     private val scope: CoroutineScope,
     private val config: CacheConfig,
 ) : CoroutineScope by coroutineScope(scope) {
 
+    val expirationEnabled: Boolean get() = config.expirationEnabled
+    val minExpireDuration: Duration get() = config.minExpireDuration
+    val maxExpireDuration: Duration get() = config.maxExpireDuration
+
     val cache: KottageStorage by lazy {
-        val kottage = Kottage(
-            name = "cache",
-            directoryPath = directory.cache,
-            environment = KottageEnvironment(
-                context = getKottageContext(),
-            ),
-            scope = scope,
-            json = Json.Default,
-        )
-        kottage.cache(config.name) {
-            strategy =
-                when (config.strategy) {
-                    CacheStrategy.FirstInFirstOut -> KottageFifoStrategy(config.maxEntries)
-                    CacheStrategy.LeastRecentlyUsed -> KottageLruStrategy(config.maxEntries)
-                }
-            defaultExpireTime = config.defaultExpireTime
+        when (config.expirationEnabled) {
+            true -> CacheFactory(scope, config, directory.cache).cache()
+            false -> CacheFactory(scope, config, directory.document).storage()
         }
     }
 
@@ -74,10 +60,12 @@ class CacheAdapter(
     ) = cache.put<CacheData<T>>(
         cacheKey.key,
         cacheData(value, cachePolicy),
-        when (cachePolicy) {
-            is CachePolicy.UntilExpires -> cachePolicy.duration
-            else -> null
-        },
+        when {
+            expirationEnabled && cachePolicy is CachePolicy.UntilExpires ->
+                cachePolicy.duration.coerceIn(minExpireDuration, maxExpireDuration)
+            else ->
+                null
+        }
     )
 
     suspend fun invalidate(cacheKey: CacheKey) {
