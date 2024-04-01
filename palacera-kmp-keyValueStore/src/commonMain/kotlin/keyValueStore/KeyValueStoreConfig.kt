@@ -1,12 +1,12 @@
-package cache
+package keyValueStore
 
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
-data class CacheConfig(
+data class KeyValueStoreConfig(
     val name: String,
     val file: String = name,
-    val strategy: CacheStrategy = CacheStrategy.FirstInFirstOut,
+    val purgeStrategy: PurgeStrategy = PurgeStrategy.FirstInFirstOut,
     val maxEntries: Long = 100,
     val expirationDuration: Duration = 1.hours,
 ) {

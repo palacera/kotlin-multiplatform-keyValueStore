@@ -1,17 +1,21 @@
 package cache
 
+import keyValueStore.KeyValueStoreAdapter
+import keyValueStore.StoreKey
+import kotlin.time.Duration
+
 class CachePolicyManager(
-    val cache: CacheAdapter,
+    val store: KeyValueStoreAdapter,
 ) {
     suspend inline fun <reified T : Any> resolve(
         policy: CachePolicy,
         cacheKey: String,
         fetchSourceData: () -> T,
-    ): T = resolve(policy, CacheKey(cacheKey), fetchSourceData)
+    ): T = resolve(policy, StoreKey(cacheKey), fetchSourceData)
 
     suspend inline fun <reified T : Any> resolve(
         policy: CachePolicy,
-        cacheKey: CacheKey,
+        storeKey: StoreKey,
         fetchSourceData: () -> T,
     ): T = when (policy) {
 
@@ -21,26 +25,26 @@ class CachePolicyManager(
 
         is CachePolicy.IfAvailable -> {
             try {
-                cache.get(cacheKey) as T
+                store.get(storeKey) as T
             } catch (e: Exception) {
                 fetchSourceData().also { data ->
-                    cache.put(cacheKey, data, policy)
+                    store.put(storeKey, data, Duration.INFINITE)
                 }
             }
         }
 
         is CachePolicy.Refresh -> {
             fetchSourceData().also { data ->
-                cache.put(cacheKey, data, policy)
+                store.put(storeKey, data, policy.expiresIn)
             }
         }
 
         is CachePolicy.UntilExpires -> {
             try {
-                cache.getIfNotExpired(cacheKey) as T
+                store.getIfNotExpired(storeKey) as T
             } catch (e: Exception) {
                 fetchSourceData().also { data ->
-                    cache.put(cacheKey, data, policy)
+                    store.put(storeKey, data, policy.expiresIn)
                 }
             }
         }
