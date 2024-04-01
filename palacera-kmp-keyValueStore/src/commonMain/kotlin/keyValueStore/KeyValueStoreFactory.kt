@@ -1,4 +1,4 @@
-package cache
+package keyValueStore
 
 import getKottageContext
 import io.github.irgaly.kottage.Kottage
@@ -10,9 +10,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration
 
-internal class CacheFactory(
+internal class KeyValueStoreFactory(
     private val scope: CoroutineScope,
-    private val config: CacheConfig,
+    private val config: KeyValueStoreConfig,
     private val directoryPath: String,
 ) {
     private fun kottage(): Kottage = Kottage(
@@ -26,11 +26,10 @@ internal class CacheFactory(
     )
 
     fun cache() : KottageStorage = kottage().cache("cache:${config.name}") {
-
         strategy =
-            when (config.strategy) {
-                CacheStrategy.FirstInFirstOut -> KottageFifoStrategy(config.maxEntries)
-                CacheStrategy.LeastRecentlyUsed -> KottageLruStrategy(config.maxEntries)
+            when (config.purgeStrategy) {
+                PurgeStrategy.FirstInFirstOut -> KottageFifoStrategy(config.maxEntries)
+                PurgeStrategy.LeastRecentlyUsed -> KottageLruStrategy(config.maxEntries)
             }
         defaultExpireTime = config.expirationDuration
     }

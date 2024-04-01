@@ -11,11 +11,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import cache.CacheAdapter
-import cache.CacheConfig
+import keyValueStore.KeyValueStoreAdapter
+import keyValueStore.KeyValueStoreConfig
 import cache.CachePolicy
 import cache.CachePolicyManager
-import cache.cacheKey
+import keyValueStore.storeKey
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
@@ -33,10 +33,10 @@ fun App() {
 
         val cacheManager = remember {
             CachePolicyManager(
-                CacheAdapter(
+                KeyValueStoreAdapter(
                     scope,
-                    CacheConfig(
-                        name = "cache",
+                    KeyValueStoreConfig(
+                        name = "cacheStore",
                     )
                 )
             )
@@ -44,28 +44,28 @@ fun App() {
 
         LaunchedEffect(Unit) {
             launch {
-                neverCachedValue = cacheManager.resolve(CachePolicy.Never, cacheKey("cache", "never")) {
+                neverCachedValue = cacheManager.resolve(CachePolicy.Never, storeKey("cache", "never")) {
                     delay(2000)
                     "Never cached"
                 }
             }
 
             launch {
-                ifAvailableCachedValue = cacheManager.resolve(CachePolicy.IfAvailable, cacheKey("cache", "if-available")) {
+                ifAvailableCachedValue = cacheManager.resolve(CachePolicy.IfAvailable, storeKey("cache", "if-available")) {
                     delay(2000)
                     "Cached if available"
                 }
             }
 
             launch {
-                refreshCachedValue = cacheManager.resolve(CachePolicy.Refresh, cacheKey("cache", "refresh")) {
+                refreshCachedValue = cacheManager.resolve(CachePolicy.Refresh(), storeKey("cache", "refresh")) {
                     delay(2000)
                     "Refresh cache"
                 }
             }
 
             launch {
-                expireCachedValue = cacheManager.resolve(CachePolicy.UntilExpires(10.seconds), cacheKey("cache", "until-expires")) {
+                expireCachedValue = cacheManager.resolve(CachePolicy.UntilExpires(10.seconds), storeKey("cache", "until-expires")) {
                     delay(2000)
                     "Expires cache"
                 }

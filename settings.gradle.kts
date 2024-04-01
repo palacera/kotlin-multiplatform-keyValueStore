@@ -1,4 +1,4 @@
-rootProject.name = "kotlin-multiplatform-cache"
+rootProject.name = "kotlin-multiplatform-keyValueStore"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -22,7 +22,7 @@ dependencyResolutionManagement {
     }
 }
 
-include("palacera-kmp-cache")
+include("palacera-kmp-keyValueStore")
 include(":sample:composeApp")
 include(":sample:server")
 include(":sample:shared")

@@ -57,7 +57,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(projects.sample.shared)
-            implementation(projects.palaceraKmpCache)
+            implementation(projects.palaceraKmpKeyValueStore)
         }
 
         androidMain.dependencies {
