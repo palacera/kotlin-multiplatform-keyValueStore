@@ -16,12 +16,10 @@ import cache.CacheConfig
 import cache.CachePolicy
 import cache.CachePolicyManager
 import cache.cacheKey
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun App() {
 
@@ -33,17 +31,16 @@ fun App() {
         var refreshCachedValue by remember { mutableStateOf("loading") }
         var expireCachedValue by remember { mutableStateOf("loading") }
 
-        val cacheAdapter = remember {
-            CacheAdapter(
-                scope,
-                CacheConfig(
-                    name = "cache",
-                    file = "cache",
+        val cacheManager = remember {
+            CachePolicyManager(
+                CacheAdapter(
+                    scope,
+                    CacheConfig(
+                        name = "cache",
+                    )
                 )
             )
         }
-
-        val cacheManager = remember { CachePolicyManager(cacheAdapter) }
 
         LaunchedEffect(Unit) {
             launch {
